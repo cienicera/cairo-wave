@@ -1,0 +1,4 @@
+[package]
+name = "cairo_wave"
+version = "0.1.0"
+authors = ["Tekkac <tekkac@proton.me>"]
