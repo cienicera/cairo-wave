@@ -1,6 +1,6 @@
-mod wave;
-
-#[cfg(test)]
-mod tests {
-    mod test_wave;
+mod contract {
+    mod notes;
 }
+mod wave;
+mod note;
+mod utils;
