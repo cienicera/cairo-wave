@@ -1,69 +1,57 @@
-#[derive(Copy, Drop)]
-struct RiffChunk {
-    ckID: felt252,
-    ckSize: felt252,
-    WAVEID: felt252,
-}
-
-#[derive(Copy, Drop)]
-struct fmtChunk {
-    ckID: felt252,
-    ckSize: felt252,
-    WAVEID: felt252,
-    fmtID: felt252,
-    fmtSize: felt252,
-    fmtCode: FormatCode,
-    channels: felt252,
-    sampleRate: felt252,
-    byteRate: felt252,
-    blockAlign: felt252,
-    bitsPerSample: felt252,
-}
-
-#[derive(Copy, Drop)]
-struct dataChunk {
-    ckID: felt252,
-    ckSize: felt252,
-    WAVEID: felt252,
-    data: Span<u8>,
-}
-
-#[derive(Copy, Drop)]
-enum FormatCode {
-    PCM, // 0x0001,
-    IEEE_FLOAT, // 0x0003,
-    ALAW, // 0x0006,
-    MULAW, // 0x0007,
-    EXTENSIBLE, // 0xFFFE,
-}
-
-const ckID: felt252 = 0x52494646;
-const WAVEID: felt252 = 0x57415645;
-const fmtID: felt252 = 0x666D7420;
-const dataID: felt252 = 0x64617461;
+const CHUNK_ID: felt252 = 'RIFF';
+const WAVE_ID: felt252 = 'WAVE';
+const FMT_ID: felt252 = 'fmt ';
+const DATA_ID: felt252 = 'data';
+const PCM_SUBCHUNK1_SIZE: u32 = 16;
+const PCM_FORMAT: u16 = 1;
 
 #[derive(Copy, Drop)]
 struct WavFile {
-    riffChunk: RiffChunk,
-    fmtChunk: fmtChunk,
-    dataChunk: dataChunk,
+    chunk_size: u32,
+    num_channels: u16,
+    sample_rate: u32,
+    bits_per_sample: u16,
+    subchunk2_size: u32,
+    data: Span<u8>,
 }
-fn generate_example_wave_file() -> WavFile {
-    let riffChunk = RiffChunk { ckID: ckID, ckSize: 0, WAVEID: WAVEID, };
-    let fmtChunk = fmtChunk {
-        ckID: fmtID,
-        ckSize: 0,
-        WAVEID: WAVEID,
-        fmtID: fmtID,
-        fmtSize: 16,
-        fmtCode: FormatCode::PCM,
-        channels: 1,
-        sampleRate: 44100,
-        byteRate: 88200,
-        blockAlign: 2,
-        bitsPerSample: 16,
-    };
-    let dataChunk = dataChunk { ckID: dataID, ckSize: 0, WAVEID: WAVEID, data: array![].span(), };
-    let wavFile = WavFile { riffChunk: riffChunk, fmtChunk: fmtChunk, dataChunk: dataChunk, };
-    return wavFile;
+use core::debug::PrintTrait;
+
+impl WavToBytes of Into<WavFile, ByteArray> {
+    fn into(self: WavFile) -> ByteArray {
+        let mut bytes: ByteArray = "";
+        // TODO: Assert correct data size?
+
+        bytes.append_word(CHUNK_ID, 4);
+        bytes.append_word_rev(self.chunk_size.into(), 4);
+        bytes.append_word(WAVE_ID, 4);
+        bytes.append_word(FMT_ID, 4);
+        bytes.append_word_rev(PCM_SUBCHUNK1_SIZE.into(), 4);
+        bytes.append_word_rev(PCM_FORMAT.into(), 2);
+        bytes.append_word_rev(self.num_channels.into(), 2);
+        bytes.append_word_rev(self.sample_rate.into(), 4);
+        let byte_rate = self.sample_rate
+            * self.num_channels.into()
+            * self.bits_per_sample.into()
+            / 8_u32;
+        bytes.append_word_rev(byte_rate.into(), 4);
+        let block_align = self.num_channels.into() * self.bits_per_sample.into() / 8_u16;
+        bytes.append_word_rev(block_align.into(), 2);
+        bytes.append_word_rev(self.bits_per_sample.into(), 2);
+        bytes.append_word(DATA_ID, 4);
+        bytes.append_word_rev(self.subchunk2_size.into(), 4);
+
+        // Append data
+
+        let mut count = 0;
+        let data = loop {
+            if self.data.len() - count == 0 {
+                break;
+            }
+            bytes.append_byte(*self.data[count]);
+            count += 1;
+        };
+        bytes
+    }
 }
+
+fn generate_example_wave_file() {}
