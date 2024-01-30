@@ -2,3 +2,10 @@
 name = "cairo_wave"
 version = "0.1.0"
 authors = ["Tekkac <tekkac@proton.me>"]
+edition = '2023_10'
+
+[[target.starknet-contract]]
+sierra = true
+
+[dependencies]
+starknet = ">=2.4.0"
