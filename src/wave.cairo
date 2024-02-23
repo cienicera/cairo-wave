@@ -14,7 +14,6 @@ struct WavFile {
     subchunk2_size: u32,
     data: Span<u8>,
 }
-use core::debug::PrintTrait;
 
 impl WavToBytes of Into<WavFile, ByteArray> {
     fn into(self: WavFile) -> ByteArray {
@@ -41,9 +40,8 @@ impl WavToBytes of Into<WavFile, ByteArray> {
         bytes.append_word_rev(self.subchunk2_size.into(), 4);
 
         // Append data
-
         let mut count = 0;
-        let data = loop {
+        loop {
             if self.data.len() - count == 0 {
                 break;
             }
@@ -54,4 +52,3 @@ impl WavToBytes of Into<WavFile, ByteArray> {
     }
 }
 
-fn generate_example_wave_file() {}
