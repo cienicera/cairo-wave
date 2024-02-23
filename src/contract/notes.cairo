@@ -26,14 +26,23 @@ mod NotesContract {
         }
 
         fn get_notes(self: @ContractState) -> ByteArray {
-            let note_type = NoteType::Triangle;
+            let note_type = NoteType::Square;
             let duration_ms = 250;
             let sol: Note = Note { frequency_hz: 392, duration_ms, note_type };
             let la: Note = Note { frequency_hz: 440, duration_ms, note_type };
             let la2: Note = Note { frequency_hz: 440, duration_ms: 2 * duration_ms, note_type };
             let si: Note = Note { frequency_hz: 494, duration_ms, note_type };
+            let do2: Note = Note { frequency_hz: 523, duration_ms: duration_ms * 2, note_type };
+            let si2: Note = Note { frequency_hz: 494, duration_ms: duration_ms * 2, note_type };
+            let empty: Note = Note { frequency_hz: 16000, duration_ms: 10, note_type };
 
-            let music = Music { notes: array![sol, la, si, sol, la2].span(), sample_rate: 8000 };
+            let music = Music {
+                notes: array![
+                    sol, la, si, sol, la2, empty, la, si, do2, empty, do2, si2, empty, si2
+                ]
+                    .span(),
+                sample_rate: 8000
+            };
             let wav: WavFile = music.into();
             wav.into()
         }
