@@ -23,12 +23,14 @@ struct Music {
     sample_rate: u32,
 }
 
+// TODO generics
 trait NoteToSamples {
-    fn to_mono(self: Note, sample_rate_hz: u32) -> Span<u8>;
+    fn to_mono(self: Note, sample_rate_hz: u32) -> Array<u8>;
+    fn append_to_mono(self: Note, ref data: Array<u8>, sample_rate_hz: u32);
 }
 
 impl NoteToSamplesImpl of NoteToSamples {
-    fn to_mono(self: Note, sample_rate_hz: u32) -> Span<u8> {
+    fn to_mono(self: Note, sample_rate_hz: u32) -> Array<u8> {
         match self.note_type {
             NoteType::Sine => utils::generate_sine_wave(
                 self.frequency_hz, self.duration_ms, sample_rate_hz
@@ -42,6 +44,16 @@ impl NoteToSamplesImpl of NoteToSamples {
             NoteType::Triangle => utils::generate_triangle_wave(
                 self.frequency_hz, self.duration_ms, sample_rate_hz
             ),
+        }
+    }
+
+    fn append_to_mono(self: Note, ref data: Array<u8>, sample_rate_hz: u32) {
+        let mut new_data = self.to_mono(sample_rate_hz);
+        loop {
+            match new_data.pop_front() {
+                Option::Some(value) => data.append(value),
+                Option::None => { break; }
+            }
         }
     }
 }
@@ -62,15 +74,23 @@ impl PrintTraitImpl of PrintTrait<Span<u8>> {
 
 impl MusicToWavFile of Into<Music, WavFile> {
     fn into(self: Music) -> WavFile {
-        let note = *self.notes[0];
-        let data = note.to_mono(self.sample_rate);
-        WavFile {
-            chunk_size: (36 + data.len()),
-            num_channels: 1_u16,
-            sample_rate: self.sample_rate,
-            bits_per_sample: 8_u16,
-            subchunk2_size: data.len() * 8,
-            data,
+        // TODO: loop over notes
+        let mut data: Array<u8> = array![];
+        let mut notes = self.notes;
+        loop {
+            match notes.pop_front() {
+                Option::Some(note) => (*note).append_to_mono(ref data, self.sample_rate),
+                Option::None => {
+                    break WavFile {
+                        chunk_size: (36 + data.len()),
+                        num_channels: 1_u16,
+                        sample_rate: self.sample_rate,
+                        bits_per_sample: 8_u16,
+                        subchunk2_size: data.len() * 8,
+                        data: data.span()
+                    };
+                }
+            }
         }
     }
 }
