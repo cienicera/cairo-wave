@@ -17,7 +17,7 @@ mod NotesContract {
     #[storage]
     struct Storage {}
 
-    #[external(v0)]
+    #[abi(embed_v0)]
     impl NotesContractImpl of INotesContract<ContractState> {
         fn get_note(self: @ContractState, note: Note) -> ByteArray {
             let music = Music { notes: array![note].span(), sample_rate: 8000 };
