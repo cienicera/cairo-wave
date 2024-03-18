@@ -41,10 +41,7 @@ impl WavToBytes of Into<WavFile, ByteArray> {
 
         // Append data
         let mut count = 0;
-        loop {
-            if self.data.len() - count == 0 {
-                break;
-            }
+        while self.data.len() - count > 0 {
             bytes.append_byte(*self.data[count]);
             count += 1;
         };

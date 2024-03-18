@@ -17,11 +17,7 @@ fn generate_square_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
     let mega_half: u64 = mega_full / 2;
 
-    loop {
-        if num_samples_left == 0 {
-            break;
-        }
-
+    while num_samples_left > 0 {
         if (num_samples_left * PRECISION) % mega_full < mega_half {
             samples.append(0);
         } else {
@@ -39,11 +35,7 @@ fn generate_sawtooth_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u
 
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
 
-    loop {
-        if num_samples_left == 0 {
-            break;
-        }
-
+    while num_samples_left > 0 {
         let value = ((num_samples_left * PRECISION) % mega_full) * 255 / mega_full;
 
         samples.append(value.try_into().unwrap());
@@ -60,10 +52,7 @@ fn generate_triangle_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
     let mega_half: u64 = mega_full / 2;
 
-    loop {
-        if num_samples_left == 0 {
-            break;
-        }
+    while num_samples_left > 0 {
         let pos = (num_samples_left * PRECISION) % mega_full;
         let value = if pos < mega_half {
             pos * 255 / mega_half
