@@ -1,7 +1,7 @@
 import subprocess
 import ast
 
-CONTRACT_ADDRESS = "0x01ede845ba73f89a810b153fbd6231c1ef79c371d16577e97af80419b47ee6d8"
+CONTRACT_ADDRESS = "0x04753e321e41c407187dc0a444a291957aff9740b526c97fbb8d14d073eee32a"
 
 res = subprocess.run(['starkli', 'call', CONTRACT_ADDRESS, 'get_notes', '90'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 res = res.stdout.decode('utf-8')
