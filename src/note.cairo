@@ -49,11 +49,8 @@ impl NoteToSamplesImpl of NoteToSamples {
 
     fn append_to_mono(self: Note, ref data: Array<u8>, sample_rate_hz: u32) {
         let mut new_data = self.to_mono(sample_rate_hz);
-        loop {
-            match new_data.pop_front() {
-                Option::Some(value) => data.append(value),
-                Option::None => { break; }
-            }
+        while let Option::Some(value) = new_data.pop_front() {
+            data.append(value);
         }
     }
 }
@@ -63,11 +60,8 @@ use core::debug::PrintTrait;
 impl PrintTraitImpl of PrintTrait<Span<u8>> {
     fn print(self: Span<u8>) {
         let mut s = self;
-        loop {
-            match s.pop_back() {
-                Option::Some(x) => { print!(" {:}", *x); },
-                Option::None => { break; },
-            }
+        while let Option::Some(x) = s.pop_back() {
+            print!(" {:}", *x);
         }
     }
 }
@@ -77,20 +71,17 @@ impl MusicToWavFile of Into<Music, WavFile> {
         // TODO: loop over notes
         let mut data: Array<u8> = array![];
         let mut notes = self.notes;
-        loop {
-            match notes.pop_front() {
-                Option::Some(note) => (*note).append_to_mono(ref data, self.sample_rate),
-                Option::None => {
-                    break WavFile {
-                        chunk_size: (36 + data.len()),
-                        num_channels: 1_u16,
-                        sample_rate: self.sample_rate,
-                        bits_per_sample: 8_u16,
-                        subchunk2_size: data.len() * 8,
-                        data: data.span()
-                    };
-                }
-            }
+        while let Option::Some(note) = notes
+            .pop_front() {
+                (*note).append_to_mono(ref data, self.sample_rate);
+            };
+        WavFile {
+            chunk_size: (36 + data.len()),
+            num_channels: 1_u16,
+            sample_rate: self.sample_rate,
+            bits_per_sample: 8_u16,
+            subchunk2_size: data.len() * 8,
+            data: data.span()
         }
     }
 }
