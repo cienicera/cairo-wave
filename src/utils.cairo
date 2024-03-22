@@ -1,12 +1,26 @@
 use core::option::OptionTrait;
 use core::traits::TryInto;
+use orion::numbers::{FP16x16, FP16x16Impl, FixedTrait};
 const PRECISION: u64 = 1_000_000;
 
 // TODO: Test append to array version for efficiency
 
 // TODO
 fn generate_sine_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32) -> Array<u8> {
-    let samples = array![];
+    let mut samples: Array<u8> = array![];
+    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz.into()) / 1000).into();
+
+    loop {
+        if num_samples_left == 0 {
+            break;
+        }
+        let t: u32 = ((num_samples_left - 1) / sample_rate_hz.into()).try_into().unwrap();
+        let fp: FP16x16 = FixedTrait::new_unscaled((2 * (22 / 7) * frequency_hz * t), false);
+        let sample_value: u8 = fp.sin().try_into().unwrap();
+
+        samples.append(sample_value);
+        num_samples_left -= 1;
+    };
     samples
 }
 

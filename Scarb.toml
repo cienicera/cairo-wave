@@ -9,3 +9,4 @@ sierra = true
 
 [dependencies]
 starknet = ">=2.6.0"
+orion = { git = "https://github.com/gizatechxyz/onnx-cairo" }
