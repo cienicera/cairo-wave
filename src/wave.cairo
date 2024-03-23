@@ -1,3 +1,6 @@
+use core::byte_array::ByteArrayTrait;
+use core::option::OptionTrait;
+use core::traits::TryInto;
 const CHUNK_ID: felt252 = 'RIFF';
 const WAVE_ID: felt252 = 'WAVE';
 const FMT_ID: felt252 = 'fmt ';
@@ -12,8 +15,10 @@ struct WavFile {
     sample_rate: u32,
     bits_per_sample: u16,
     subchunk2_size: u32,
-    data: Span<u8>,
+    data: Span<u32>,
 }
+
+
 
 impl WavToBytes of Into<WavFile, ByteArray> {
     fn into(self: WavFile) -> ByteArray {
@@ -41,10 +46,18 @@ impl WavToBytes of Into<WavFile, ByteArray> {
 
         // Append data
         let mut count = 0;
-        while self.data.len() - count > 0 {
-            bytes.append_byte(*self.data[count]);
-            count += 1;
-        };
+        if self.bits_per_sample == 4_u16 {
+            while self.data.len() - count > 1 {
+                bytes.append_byte((*self.data[count]| *self.data[count + 1]).try_into().unwrap());
+                count += 2;
+            };
+        } else {
+            while self.data.len() - count > 0 {
+                bytes.append_word_rev((*self.data[count]).into(), self.bits_per_sample.into() / 8_u32);
+                count += 1;
+            };
+        }
+        
         bytes
     }
 }
