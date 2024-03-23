@@ -5,11 +5,15 @@ const PRECISION: u64 = 1_000_000;
 
 fn get_max_value(bit_depth: u16) -> u64 {
     if bit_depth != 4 && bit_depth != 8 && bit_depth != 16 && bit_depth != 24 && bit_depth != 32 {
-    panic!("Unsupported bit depth");
+        panic!("Unsupported bit depth");
+    } else if bit_depth == 4 {
+        return 15;
+    } else if bit_depth == 8 {
+        return 255;
     }
     let mut n = bit_depth;
     let mut result: u64 = 1;
-    while n > 0 {
+    while n > 1 {
         result *= 2;
         n -= 1;
     };
@@ -18,12 +22,16 @@ fn get_max_value(bit_depth: u16) -> u64 {
 // TODO: Test append to array version for efficiency
 
 // TODO
-fn generate_sine_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16) -> Array<u32> {
+fn generate_sine_wave(
+    frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
+) -> Array<u32> {
     let samples = array![];
     samples
 }
 
-fn generate_square_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16) -> Array<u32> {
+fn generate_square_wave(
+    frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
+) -> Array<u32> {
     let mut samples: Array<u32> = array![];
     let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / 1000).into();
 
@@ -31,7 +39,6 @@ fn generate_square_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32
     let mega_half: u64 = mega_full / 2;
 
     let max_value: u64 = get_max_value(bit_depth);
-
     while num_samples_left > 0 {
         if (num_samples_left * PRECISION) % mega_full < mega_half {
             samples.append(0);
@@ -44,12 +51,13 @@ fn generate_square_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32
 }
 
 // TODO
-fn generate_sawtooth_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16) -> Array<u32> {
+fn generate_sawtooth_wave(
+    frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
+) -> Array<u32> {
     let mut samples: Array<u32> = array![];
     let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / 1000).into();
 
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
-
 
     let max_value: u64 = get_max_value(bit_depth);
 
@@ -63,7 +71,9 @@ fn generate_sawtooth_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u
     samples
 }
 
-fn generate_triangle_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16) -> Array<u32> {
+fn generate_triangle_wave(
+    frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
+) -> Array<u32> {
     let mut samples: Array<u32> = array![];
     let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / 1000).into();
 
@@ -71,7 +81,6 @@ fn generate_triangle_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u
     let mega_half: u64 = mega_full / 2;
 
     let max_value: u64 = get_max_value(bit_depth);
-
     while num_samples_left > 0 {
         let pos = (num_samples_left * PRECISION) % mega_full;
         let value = if pos < mega_half {
@@ -84,3 +93,4 @@ fn generate_triangle_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u
     };
     samples
 }
+

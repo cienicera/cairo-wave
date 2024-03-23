@@ -20,7 +20,7 @@ mod NotesContract {
     #[abi(embed_v0)]
     impl NotesContractImpl of INotesContract<ContractState> {
         fn get_note(self: @ContractState, note: Note) -> ByteArray {
-            let music = Music { notes: array![note].span(), sample_rate: 8000, bit_depth: 32 };
+            let music = Music { notes: array![note].span(), sample_rate: 8000, bit_depth: 16 };
             let wav: WavFile = music.into();
             wav.into()
         }
@@ -42,7 +42,7 @@ mod NotesContract {
                 ]
                     .span(),
                 sample_rate: 8000,
-                bit_depth: 32,
+                bit_depth: 16,
             };
             let wav: WavFile = music.into();
             wav.into()

@@ -19,7 +19,6 @@ struct WavFile {
 }
 
 
-
 impl WavToBytes of Into<WavFile, ByteArray> {
     fn into(self: WavFile) -> ByteArray {
         let mut bytes: ByteArray = "";
@@ -47,17 +46,25 @@ impl WavToBytes of Into<WavFile, ByteArray> {
         // Append data
         let mut count = 0;
         if self.bits_per_sample == 4_u16 {
-            while self.data.len() - count > 1 {
-                bytes.append_byte((*self.data[count]| *self.data[count + 1]).try_into().unwrap());
-                count += 2;
-            };
+            while self.data.len()
+                - count > 1 {
+                    bytes
+                        .append_byte(
+                            (*self.data[count] | *self.data[count + 1]).try_into().unwrap()
+                        );
+                    count += 2;
+                };
         } else {
-            while self.data.len() - count > 0 {
-                bytes.append_word_rev((*self.data[count]).into(), self.bits_per_sample.into() / 8_u32);
-                count += 1;
-            };
+            while self.data.len()
+                - count > 0 {
+                    bytes
+                        .append_word_rev(
+                            (*self.data[count]).into(), self.bits_per_sample.into() / 8_u32
+                        );
+                    count += 1;
+                };
         }
-        
+
         bytes
     }
 }
