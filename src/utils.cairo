@@ -8,18 +8,17 @@ const PRECISION: u64 = 1_000_000;
 // TODO
 fn generate_sine_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32) -> Array<u8> {
     let mut samples: Array<u8> = array![];
-    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz.into()) / 1000).into();
+    let mut num_samples_left: u32 = ((duration_ms * sample_rate_hz).into() / 1000);
+    let mut i: u32 = 0;
 
     loop {
-        if num_samples_left == 0 {
+        if i == num_samples_left - 1 {
             break;
         }
-        let t: u32 = ((num_samples_left - 1) / sample_rate_hz.into()).try_into().unwrap();
-        let fp: FP16x16 = FixedTrait::new_unscaled((2 * (22 / 7) * frequency_hz * t), false);
-        let sample_value: u8 = fp.sin().try_into().unwrap();
-
+        let sample_value: u8 = (((2 * frequency_hz * (i+1)) / 127) % 256).try_into().unwrap();
+        println!("sampleeeeee {}",sample_value);
         samples.append(sample_value);
-        num_samples_left -= 1;
+        i += 1;
     };
     samples
 }
