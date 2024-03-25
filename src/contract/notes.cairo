@@ -80,6 +80,20 @@ mod tests {
     }
 
     #[test]
+    fn test_sine_wave() {
+        let contract = deploy();
+        let note = Note { frequency_hz: 440, duration_ms: 1500, note_type: NoteType::Sine };
+
+        let res: ByteArray = contract.get_note(note);
+        assert!(res[0] == 'R');
+        assert!(res[1] == 'I');
+        assert!(res[2] == 'F');
+        assert!(res[3] == 'F');
+        println!("{:}", res);
+    }
+
+
+    #[test]
     fn test_get_notes() {
         let contract = deploy();
 

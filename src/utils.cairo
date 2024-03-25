@@ -1,12 +1,37 @@
 use core::option::OptionTrait;
 use core::traits::TryInto;
+use orion::numbers::{FP32x32, FP32x32Impl, FixedTrait};
 const PRECISION: u64 = 1_000_000;
 
 // TODO: Test append to array version for efficiency
 
 // TODO
 fn generate_sine_wave(frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32) -> Array<u8> {
-    let samples = array![];
+    let mut samples: Array<u8> = array![];
+    let num_samples: u32 = ((duration_ms * sample_rate_hz).into() / 1000);
+    let mut num_samples_left: u32 = ((duration_ms * sample_rate_hz).into() / 1000); //12,000
+
+    let denum: FP32x32 = FixedTrait::new_unscaled(1000 * num_samples_left.into(), false);
+    let PI: FP32x32 = FixedTrait::new(13493037705, false);
+    loop {
+        if num_samples_left == 0 {
+            break;
+        }
+        let num: FP32x32 = FixedTrait::new_unscaled(
+            (num_samples.into() - num_samples_left.into()) * duration_ms.into(), false
+        );
+
+        let t: FP32x32 = num / denum / FixedTrait::new_unscaled(1000 , false);
+        let mut fp: FP32x32 = (FixedTrait::new_unscaled((2 * frequency_hz.into()), false) * FixedTrait::new_unscaled(t.mag/1000 , false) * PI) / FixedTrait::new_unscaled(10000 , false);
+        let mut fp_sample_value: FP32x32 = fp.sin() * FixedTrait::new_unscaled(128, false);
+
+
+        fp_sample_value += FixedTrait::new_unscaled(128, false);
+        let sample_value: u8 = (fp_sample_value % FixedTrait::new_unscaled(128, false)).try_into().unwrap();
+        samples.append(sample_value);
+        num_samples_left -= 1;
+
+    };
     samples
 }
 
