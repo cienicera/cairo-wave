@@ -9,3 +9,5 @@ sierra = true
 
 [dependencies]
 starknet = ">=2.6.0"
+
+koji = { git = "https://github.com/cienicera/Koji.git" }

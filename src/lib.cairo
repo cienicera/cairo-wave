@@ -4,3 +4,4 @@ mod contract {
 mod wave;
 mod note;
 mod utils;
+mod custom_note;
