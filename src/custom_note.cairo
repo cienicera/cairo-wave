@@ -1,4 +1,4 @@
-use koji::midi::{ types::{Modes, PitchClass}, pitch::{PitchClassTrait, PitchClassImpl}};
+use koji::midi::{types::{Modes, PitchClass}, pitch::{PitchClassTrait, PitchClassImpl}};
 use cairo_wave::note::{Note, NoteType, Music, MusicToWavFile};
 
 
