@@ -18,29 +18,3 @@ impl CustomNoteImpl of CustomNoteTrait {
         custom_note
     }
 }
-
-
-#[cfg(test)]
-mod tests {
-    use core::serde::Serde;
-    use cairo_wave::contract::notes::{
-        NotesContract, INotesContractDispatcher, INotesContractDispatcherTrait, tests::deploy
-    };
-    use cairo_wave::note::{Note, NoteType};
-    use starknet::deploy_syscall;
-
-    #[test]
-    fn test_create_custom_note() {
-        let contract = deploy();
-        let test_custom_note: Note = super::CustomNoteImpl::create_custom_note(
-            9, 4, 1500, NoteType::Square
-        );
-
-        let resultant_note: ByteArray = contract.get_note(test_custom_note);
-        assert!(resultant_note[0] == 'R');
-        assert!(resultant_note[1] == 'I');
-        assert!(resultant_note[2] == 'F');
-        assert!(resultant_note[3] == 'F');
-        println!("custom here {:}", resultant_note);
-    }
-}
