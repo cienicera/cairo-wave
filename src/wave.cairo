@@ -48,10 +48,8 @@ impl WavToBytes of Into<WavFile, ByteArray> {
         if self.bits_per_sample == 4_u16 {
             while self.data.len()
                 - count > 1 {
-                    bytes
-                        .append_byte(
-                            (*self.data[count] | *self.data[count + 1]).try_into().unwrap()
-                        );
+                    let byte: u32 = *self.data[count] * 0x10 + *self.data[count + 1];
+                    bytes.append_byte((byte).try_into().unwrap());
                     count += 2;
                 };
         } else {
