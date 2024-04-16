@@ -1,6 +1,6 @@
-use core::option::OptionTrait;
-use core::traits::TryInto;
+use cubit::f64::types::fixed::{Fixed, FixedTrait, ONE};
 const PRECISION: u64 = 1_000_000;
+const ONE_SEC_IN_MS: u32 = 1_000;
 
 
 fn get_max_value(bit_depth: u16) -> u64 {
