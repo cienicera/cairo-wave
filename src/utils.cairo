@@ -25,7 +25,32 @@ fn get_max_value(bit_depth: u16) -> u64 {
 fn generate_sine_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
-    let samples = array![];
+    let mut samples: Array<u32> = array![];
+    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz.into()) / ONE_SEC_IN_MS).into();
+    let num_samples: u64 = num_samples_left;
+    let max_value: u64 = get_max_value(bit_depth);
+
+    let denum: Fixed = FixedTrait::new_unscaled(ONE_SEC_IN_MS.into() * num_samples_left, false);
+    let PI: Fixed = FixedTrait::new(13493037705, false);
+    loop {
+        if num_samples_left == 0 {
+            break;
+        }
+        let num: Fixed = FixedTrait::new_unscaled(
+            (num_samples - num_samples_left) * duration_ms.into(), false
+        );
+
+        let t: Fixed = num / denum;
+        let mut fp: Fixed = FixedTrait::new_unscaled((2 * frequency_hz.into()), false) * t * PI;
+        // TODO use sin_fast whe navailable?
+        let mut fp_sample_value: Fixed = fp.sin() + FixedTrait::new(ONE, false);
+        fp_sample_value = fp_sample_value.abs()
+            * FixedTrait::new_unscaled(max_value, false)
+            / FixedTrait::new_unscaled(2, false);
+        let sample_value: u32 = fp_sample_value.floor().try_into().unwrap();
+        samples.append(sample_value.into());
+        num_samples_left = num_samples_left - 1_u64;
+    };
     samples
 }
 
@@ -33,7 +58,7 @@ fn generate_square_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
-    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / 1000).into();
+    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / ONE_SEC_IN_MS).into();
 
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
     let mega_half: u64 = mega_full / 2;
@@ -55,7 +80,7 @@ fn generate_sawtooth_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
-    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / 1000).into();
+    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / ONE_SEC_IN_MS).into();
 
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
 
@@ -75,7 +100,7 @@ fn generate_triangle_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
-    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / 1000).into();
+    let mut num_samples_left: u64 = ((duration_ms * sample_rate_hz) / ONE_SEC_IN_MS).into();
 
     let mega_full: u64 = (PRECISION * sample_rate_hz.into()) / frequency_hz.into();
     let mega_half: u64 = mega_full / 2;
