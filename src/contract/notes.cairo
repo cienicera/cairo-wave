@@ -1,16 +1,22 @@
 use cairo_wave::note::Note;
+use core::debug::PrintTrait;
+use core::byte_array::ByteArray;
 
 #[starknet::interface]
 trait INotesContract<TContractState> {
     fn get_note(self: @TContractState, note: Note) -> ByteArray;
     fn get_melody(self: @TContractState, note_dur_ms: u32) -> ByteArray;
+    fn get_drum_kit(self: @TContractState) -> ByteArray;
 }
 
 #[starknet::contract]
 mod NotesContract {
     use core::traits::Into;
+    use core::debug::PrintTrait;
+    use core::byte_array::ByteArray;
     use cairo_wave::note::{Note, NoteType, Music, MusicToWavFile};
     use cairo_wave::wave::WavFile;
+    use cairo_wave::drum_kit::{DrumSound, get_drum_sound};
 
     use super::INotesContract;
 
@@ -47,16 +53,102 @@ mod NotesContract {
             let wav: WavFile = music.into();
             wav.into()
         }
+        fn get_drum_kit(self: @ContractState) -> ByteArray {
+            let sample_rate = 8000;
+            let bit_depth = 8;
+            // Get individual drum sounds
+            let kick = get_drum_sound(DrumSound::Kick, sample_rate, bit_depth);
+            let snare = get_drum_sound(DrumSound::Snare, sample_rate, bit_depth);
+            let hi_hat = get_drum_sound(DrumSound::HiHat, sample_rate, bit_depth);
+            let bass = get_drum_sound(DrumSound::Bass, sample_rate, bit_depth);
+            // Create silence
+            let silence_duration = 2000; // 1 second of silence at 8000 Hz
+            let mut silence: Array<u32> = ArrayTrait::new();
+            let mut i = 0;
+            loop {
+                if i == silence_duration {
+                    break;
+                }
+                silence.append(0);
+                i += 1;
+            };
+            let mut pattern: Array<Array<u32>> = ArrayTrait::new();
+            // Demo pop rhythm
+            // Kick
+            pattern.append(kick.clone());
+            pattern.append(silence.clone());
+            // Hi-hat
+            pattern.append(hi_hat.clone());
+            pattern.append(silence.clone());
+            // Snare
+            pattern.append(snare.clone());
+            pattern.append(silence.clone());
+            // Hi-hat
+            pattern.append(hi_hat.clone());
+            pattern.append(silence.clone());
+            // Kick
+            pattern.append(kick.clone());
+            pattern.append(silence.clone());
+            // Hi-hat
+            pattern.append(hi_hat.clone());
+            pattern.append(silence.clone());
+            // Snare
+            pattern.append(snare.clone());
+            pattern.append(silence.clone());
+            // Hi-hat
+            pattern.append(hi_hat.clone());
+            pattern.append(silence.clone());
+            // Kick
+            pattern.append(kick.clone());
+            pattern.append(silence.clone());
+            // Hi-hat
+            pattern.append(hi_hat.clone());
+            pattern.append(silence.clone());
+            // Snare
+            pattern.append(snare.clone());
+            pattern.append(silence.clone());
+            // Hi-hat
+            pattern.append(hi_hat.clone());
+            pattern.append(silence.clone());
+            // Combine all samples into a single array
+            let mut all_samples: Array<u32> = ArrayTrait::new();
+            let mut i = 0;
+            loop {
+                if i >= pattern.len() {
+                    break;
+                }
+                all_samples.append_span(pattern[i].span());
+                i += 1;
+            };
+            let total_samples = all_samples.len();
+            if total_samples == 0 {
+                return ByteArray { data: array![], pending_word: 0, pending_word_len: 0 };
+            }
+            // Create a WavFile struct
+            let wav = WavFile {
+                chunk_size: 36 + (total_samples * 8), 
+                num_channels: 1, // Mono
+                sample_rate,
+                bits_per_sample: bit_depth,
+                subchunk2_size: total_samples * 8,
+                data: all_samples.span(),
+            };
+            // Convert WavFile to ByteArray
+            wav.into()
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use core::serde::Serde;
+    use core::debug::PrintTrait;
+    use core::byte_array::ByteArray;
     use super::NotesContract;
     use super::{INotesContractDispatcher, INotesContractDispatcherTrait};
     use cairo_wave::custom_note::CustomNoteImpl;
     use cairo_wave::note::{Note, NoteType};
+    use cairo_wave::drum_kit::{DrumSound, get_drum_sound};
 
     use starknet::deploy_syscall;
 
@@ -107,5 +199,19 @@ mod tests {
         assert!(resultant_note[2] == 'F');
         assert!(resultant_note[3] == 'F');
         println!("custom here {:}", resultant_note);
+    }
+    #[test]
+    fn test_get_drum_kit() {
+        let contract = deploy();
+        let res: ByteArray = contract.get_drum_kit();
+        if res.len() == 0 {
+            'Empty drum kit result'.print();
+            return; 
+        }
+        assert!(res[0] == 'R', "First byte should be 'R'");
+        assert!(res[1] == 'I', "Second byte should be 'I'");
+        assert!(res[2] == 'F', "Third byte should be 'F'");
+        assert!(res[3] == 'F', "Fourth byte should be 'F'");
+        println!("{:}", res);
     }
 }
