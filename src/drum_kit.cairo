@@ -1,8 +1,7 @@
 use cairo_wave::note::{Note, NoteType};
-use cairo_wave::utils::{generate_square_wave, generate_sawtooth_wave, generate_triangle_wave, generate_sine_wave};
-use core::array::SpanTrait;
-use core::traits::Into;
-use core::debug::PrintTrait;
+use cairo_wave::utils::{
+    generate_square_wave, generate_sawtooth_wave, generate_triangle_wave, generate_sine_wave
+};
 
 #[derive(Drop, Copy, Serde)]
 enum DrumSound {
@@ -20,9 +19,9 @@ fn get_drum_sound(sound: DrumSound, sample_rate: u32, bit_depth: u16) -> Array<u
         DrumSound::Bass => generate_bass(sample_rate, bit_depth),
         DrumSound::HiHat => generate_hi_hat(sample_rate, bit_depth),
     };
-    
+
     if result.is_empty() {
-        return array![1];  
+        return array![1];
     }
     let mut non_zero_samples: Array<u32> = array![];
     let mut i: u32 = 0;
@@ -38,7 +37,7 @@ fn get_drum_sound(sound: DrumSound, sample_rate: u32, bit_depth: u16) -> Array<u
         }
         i += 1;
     };
-    
+
     non_zero_samples
 }
 // Kick
@@ -56,7 +55,7 @@ fn generate_kick(sample_rate: u32, bit_depth: u16) -> Array<u32> {
         shortened_kick.append(*kick.at(i));
         i += 1;
     };
-    
+
     shortened_kick
 }
 // Snare
@@ -66,14 +65,18 @@ fn generate_snare(sample_rate: u32, bit_depth: u16) -> Array<u32> {
     // Mix the two waves
     let mut mixed_snare = array![];
     let mut i: u32 = 0;
-    let min_len = if snare.len() < snare_high.len() { snare.len() } else { snare_high.len() };
+    let min_len = if snare.len() < snare_high.len() {
+        snare.len()
+    } else {
+        snare_high.len()
+    };
     loop {
         if i >= min_len {
             break;
         }
         let sample1 = *snare.at(i);
         let sample2 = *snare_high.at(i);
-        let mixed_sample = (sample1 * 2 + sample2) / 3;  
+        let mixed_sample = (sample1 * 2 + sample2) / 3;
         mixed_snare.append(mixed_sample);
         i += 1;
     };
@@ -115,7 +118,6 @@ fn generate_hi_hat(sample_rate: u32, bit_depth: u16) -> Array<u32> {
     apply_decay(ref mixed_hi_hat, 99);
     add_noise(ref mixed_hi_hat, 150);
 
-
     mixed_hi_hat
 }
 
@@ -132,16 +134,16 @@ fn apply_decay(ref samples: Array<u32>, decay_factor: u32) {
             break;
         }
         let sample = *samples.at(i);
-        let decay = if len > 1 { 
+        let decay = if len > 1 {
             (decay_factor * i) / (len - 1)
-        } else { 
-            0 
+        } else {
+            0
         };
-        
+
         let decayed_sample = if sample > decay {
             sample - decay
         } else {
-            1  
+            1
         };
         new_samples.append(decayed_sample);
         i += 1;

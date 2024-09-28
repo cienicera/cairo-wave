@@ -1,6 +1,4 @@
 use cairo_wave::note::Note;
-use core::debug::PrintTrait;
-use core::byte_array::ByteArray;
 
 #[starknet::interface]
 trait INotesContract<TContractState> {
@@ -11,9 +9,6 @@ trait INotesContract<TContractState> {
 
 #[starknet::contract]
 mod NotesContract {
-    use core::traits::Into;
-    use core::debug::PrintTrait;
-    use core::byte_array::ByteArray;
     use cairo_wave::note::{Note, NoteType, Music, MusicToWavFile};
     use cairo_wave::wave::WavFile;
     use cairo_wave::drum_kit::{DrumSound, get_drum_sound};
@@ -53,6 +48,7 @@ mod NotesContract {
             let wav: WavFile = music.into();
             wav.into()
         }
+
         fn get_drum_kit(self: @ContractState) -> ByteArray {
             let sample_rate = 8000;
             let bit_depth = 8;
@@ -60,7 +56,7 @@ mod NotesContract {
             let kick = get_drum_sound(DrumSound::Kick, sample_rate, bit_depth);
             let snare = get_drum_sound(DrumSound::Snare, sample_rate, bit_depth);
             let hi_hat = get_drum_sound(DrumSound::HiHat, sample_rate, bit_depth);
-            let bass = get_drum_sound(DrumSound::Bass, sample_rate, bit_depth);
+            let _bass = get_drum_sound(DrumSound::Bass, sample_rate, bit_depth);
             // Create silence
             let silence_duration = 2000; // 1 second of silence at 8000 Hz
             let mut silence: Array<u32> = ArrayTrait::new();
@@ -126,7 +122,7 @@ mod NotesContract {
             }
             // Create a WavFile struct
             let wav = WavFile {
-                chunk_size: 36 + (total_samples * 8), 
+                chunk_size: 36 + (total_samples * 8),
                 num_channels: 1, // Mono
                 sample_rate,
                 bits_per_sample: bit_depth,
@@ -206,7 +202,7 @@ mod tests {
         let res: ByteArray = contract.get_drum_kit();
         if res.len() == 0 {
             'Empty drum kit result'.print();
-            return; 
+            return;
         }
         assert!(res[0] == 'R', "First byte should be 'R'");
         assert!(res[1] == 'I', "Second byte should be 'I'");
