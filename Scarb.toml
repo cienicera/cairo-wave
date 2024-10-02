@@ -8,5 +8,5 @@ edition = '2023_10'
 sierra = true
 
 [dependencies]
-starknet = ">=2.6.0"
+starknet = ">=2.6.4"
 koji = { git = "https://github.com/cienicera/Koji.git" }

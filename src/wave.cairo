@@ -1,6 +1,3 @@
-use core::byte_array::ByteArrayTrait;
-use core::option::OptionTrait;
-use core::traits::TryInto;
 const CHUNK_ID: felt252 = 'RIFF';
 const WAVE_ID: felt252 = 'WAVE';
 const FMT_ID: felt252 = 'fmt ';

@@ -1,4 +1,3 @@
-use core::array::SpanTrait;
 use cairo_wave::utils;
 use cairo_wave::wave::WavFile;
 
