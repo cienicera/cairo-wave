@@ -1,5 +1,5 @@
 use koji::midi::{types::{Modes, PitchClass}, pitch::{PitchClassTrait, PitchClassImpl}};
-use cairo_wave::note::{Note, NoteType, Music, MusicToWavFile};
+use cairo_wave::note::{Note, NoteType};
 
 
 trait CustomNoteTrait {
