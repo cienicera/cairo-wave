@@ -1,4 +1,3 @@
-use cairo_wave::note::{Note, NoteType};
 use cairo_wave::utils::{
     generate_square_wave, generate_sawtooth_wave, generate_triangle_wave, generate_sine_wave
 };
@@ -20,25 +19,7 @@ fn get_drum_sound(sound: DrumSound, sample_rate: u32, bit_depth: u16) -> Array<u
         DrumSound::HiHat => generate_hi_hat(sample_rate, bit_depth),
     };
 
-    if result.is_empty() {
-        return array![1];
-    }
-    let mut non_zero_samples: Array<u32> = array![];
-    let mut i: u32 = 0;
-    loop {
-        if i >= result.len() {
-            break;
-        }
-        let sample = *result.at(i);
-        if sample == 0 {
-            non_zero_samples.append(1);
-        } else {
-            non_zero_samples.append(sample);
-        }
-        i += 1;
-    };
-
-    non_zero_samples
+    result
 }
 // Kick
 fn generate_kick(sample_rate: u32, bit_depth: u16) -> Array<u32> {
