@@ -5,24 +5,24 @@ Generate valid WAV files in Cairo
 
 ## Features
  - [x] Output WAV file
- - [x] Handle bit-depths (4, 8, 16, 32)
+ - [x] Handle bit-depths (4, 8, 16, 24, 32)
  - [ ] Handle multiple/stereo channels
  - [x] Generate square wave form
  - [x] Generate sawtooth wave forms
  - [x] Generate triangle wave forms
- - [ ] Generate sine wave forms
+ - [x] Generate sine wave forms
  - [ ] Generate an instrument (see [Koji](https://github.com/cienicera/Koji))
  - [x] Play [Koji](https://github.com/cienicera/Koji) notes
  - [ ] Play [Koji midi tracks](https://github.com/cienicera/Koji)
- - [ ] Generate an 4/8-bit low sample rate sound pack (kick, bass, snare, hi-hat)
+ - [x] Generate an 4/8-bit low sample rate sound pack (kick, bass, snare, hi-hat)
  - [X] Play short melodies
 
 
 ## Local testing: 
+You need `mplayer` installed and a test that returns the hex of the WAVE file, see [tests](./src/tests)
 ```bash
-scarb test -f get_notes > tmp/test
-python scripts/data_to_wave.py tmp/test
-mplayer tmp/test.wav
+./scripts/play.py _8bits
+./scripts/play.py test_name
 ```
 
 ## Sepolia testing 
