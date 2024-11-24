@@ -2,11 +2,15 @@
 name = "cairo_wave"
 version = "0.1.0"
 authors = ["Tekkac <tekkac@proton.me>"]
-edition = '2023_10'
+edition = '2024_07'
 
 [[target.starknet-contract]]
 sierra = true
 
 [dependencies]
-starknet = ">=2.6.4"
-koji = { git = "https://github.com/cienicera/Koji.git" }
+starknet = ">=2.8.4"
+cubit = "1.3.1"
+# koji = { git = "https://github.com/cienicera/Koji.git" }
+
+[dev-dependencies]
+cairo_test = "2.8.4"
