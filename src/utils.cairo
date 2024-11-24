@@ -22,7 +22,7 @@ fn get_max_value(bit_depth: u16) -> u64 {
 // TODO: Test append to array version for efficiency
 
 // TODO
-fn generate_sine_wave(
+pub fn generate_sine_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
@@ -54,7 +54,7 @@ fn generate_sine_wave(
     samples
 }
 
-fn generate_square_wave(
+pub fn generate_square_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
@@ -76,7 +76,7 @@ fn generate_square_wave(
 }
 
 // TODO
-fn generate_sawtooth_wave(
+pub fn generate_sawtooth_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
@@ -96,7 +96,7 @@ fn generate_sawtooth_wave(
     samples
 }
 
-fn generate_triangle_wave(
+pub fn generate_triangle_wave(
     frequency_hz: u32, duration_ms: u32, sample_rate_hz: u32, bit_depth: u16
 ) -> Array<u32> {
     let mut samples: Array<u32> = array![];
