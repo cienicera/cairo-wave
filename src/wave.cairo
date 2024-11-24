@@ -6,13 +6,13 @@ const PCM_SUBCHUNK1_SIZE: u32 = 16;
 const PCM_FORMAT: u16 = 1;
 
 #[derive(Copy, Drop)]
-struct WavFile {
-    chunk_size: u32,
-    num_channels: u16,
-    sample_rate: u32,
-    bits_per_sample: u16,
-    subchunk2_size: u32,
-    data: Span<u32>,
+pub struct WavFile {
+    pub chunk_size: u32,
+    pub num_channels: u16,
+    pub sample_rate: u32,
+    pub bits_per_sample: u16,
+    pub subchunk2_size: u32,
+    pub data: Span<u32>,
 }
 
 
@@ -43,21 +43,19 @@ impl WavToBytes of Into<WavFile, ByteArray> {
         // Append data
         let mut count = 0;
         if self.bits_per_sample == 4_u16 {
-            while self.data.len()
-                - count > 1 {
-                    let byte: u32 = *self.data[count] * 0x10 + *self.data[count + 1];
-                    bytes.append_byte((byte).try_into().unwrap());
-                    count += 2;
-                };
+            while self.data.len() - count > 1 {
+                let byte: u32 = *self.data[count] * 0x10 + *self.data[count + 1];
+                bytes.append_byte((byte).try_into().unwrap());
+                count += 2;
+            };
         } else {
-            while self.data.len()
-                - count > 0 {
-                    bytes
-                        .append_word_rev(
-                            (*self.data[count]).into(), self.bits_per_sample.into() / 8_u32
-                        );
-                    count += 1;
-                };
+            while self.data.len() - count > 0 {
+                bytes
+                    .append_word_rev(
+                        (*self.data[count]).into(), self.bits_per_sample.into() / 8_u32
+                    );
+                count += 1;
+            };
         }
 
         bytes

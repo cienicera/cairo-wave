@@ -2,7 +2,7 @@ use cairo_wave::utils;
 use cairo_wave::wave::WavFile;
 
 #[derive(Drop, Copy, Serde)]
-enum NoteType {
+pub enum NoteType {
     Sine,
     Square,
     Sawtooth,
@@ -10,26 +10,25 @@ enum NoteType {
 }
 
 #[derive(Drop, Copy, Serde)]
-struct Note {
-    frequency_hz: u32,
-    duration_ms: u32,
-    note_type: NoteType,
+pub struct Note {
+    pub frequency_hz: u32,
+    pub duration_ms: u32,
+    pub note_type: NoteType,
 }
 
 #[derive(Drop, Copy)]
-struct Music {
-    notes: Span<Note>,
-    sample_rate: u32,
-    bit_depth: u16,
+pub struct Music {
+    pub notes: Span<Note>,
+    pub sample_rate: u32,
+    pub bit_depth: u16,
 }
 
-// TODO generics
-trait NoteToSamples {
-    fn to_mono(self: Note, sample_rate_hz: u32, bit_depth: u16) -> Array<u32>;
-    fn append_to_mono(self: Note, ref data: Array<u32>, sample_rate_hz: u32, bit_depth: u16);
+trait NoteToSamples<T> {
+    fn to_mono(self: T, sample_rate_hz: u32, bit_depth: u16) -> Array<u32>;
+    fn append_to_mono(self: T, ref data: Array<u32>, sample_rate_hz: u32, bit_depth: u16);
 }
 
-impl NoteToSamplesImpl of NoteToSamples {
+pub impl NoteToSamplesImpl of NoteToSamples<Note> {
     fn to_mono(self: Note, sample_rate_hz: u32, bit_depth: u16) -> Array<u32> {
         match self.note_type {
             NoteType::Sine => utils::generate_sine_wave(
@@ -55,26 +54,15 @@ impl NoteToSamplesImpl of NoteToSamples {
     }
 }
 
-use core::debug::PrintTrait;
-
-impl PrintTraitImpl of PrintTrait<Span<u32>> {
-    fn print(self: Span<u32>) {
-        let mut s = self;
-        while let Option::Some(x) = s.pop_back() {
-            print!(" {:}", *x);
-        }
-    }
-}
-
-impl MusicToWavFile of Into<Music, WavFile> {
+pub impl MusicToWavFile of Into<Music, WavFile> {
     fn into(self: Music) -> WavFile {
         // TODO: loop over notes
         let mut data: Array<u32> = array![];
-        let mut notes = self.notes;
-        while let Option::Some(note) = notes
-            .pop_front() {
-                (*note).append_to_mono(ref data, self.sample_rate, self.bit_depth);
-            };
+        let mut notes: Span<Note> = self.notes;
+        while let Option::Some(note) = notes.pop_front() {
+            let note: Note = *note;
+            note.append_to_mono(ref data, self.sample_rate, self.bit_depth);
+        };
         WavFile {
             chunk_size: (36 + data.len()),
             num_channels: 1_u16,

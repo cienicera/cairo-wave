@@ -3,7 +3,7 @@ use cairo_wave::utils::{
 };
 
 #[derive(Drop, Copy, Serde)]
-enum DrumSound {
+pub enum DrumSound {
     Kick,
     Snare,
     Bass,
@@ -11,7 +11,7 @@ enum DrumSound {
 }
 
 // Get drum sound
-fn get_drum_sound(sound: DrumSound, sample_rate: u32, bit_depth: u16) -> Array<u32> {
+pub fn get_drum_sound(sound: DrumSound, sample_rate: u32, bit_depth: u16) -> Array<u32> {
     let result = match sound {
         DrumSound::Kick => generate_kick(sample_rate, bit_depth),
         DrumSound::Snare => generate_snare(sample_rate, bit_depth),
