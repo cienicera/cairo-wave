@@ -23,7 +23,7 @@ pub struct Music {
     pub bit_depth: u16,
 }
 
-trait NoteToSamples<T> {
+pub trait NoteToSamples<T> {
     fn to_mono(self: T, sample_rate_hz: u32, bit_depth: u16) -> Array<u32>;
     fn append_to_mono(self: T, ref data: Array<u32>, sample_rate_hz: u32, bit_depth: u16);
 }
