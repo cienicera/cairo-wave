@@ -3,7 +3,7 @@ const PRECISION: u64 = 1_000_000;
 const ONE_SEC_IN_MS: u32 = 1_000;
 
 
-fn get_max_value(bit_depth: u16) -> u64 {
+pub fn get_max_value(bit_depth: u16) -> u64 {
     if bit_depth != 4 && bit_depth != 8 && bit_depth != 16 && bit_depth != 24 && bit_depth != 32 {
         panic!("Unsupported bit depth");
     } else if bit_depth == 4 {
