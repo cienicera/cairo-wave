@@ -1,5 +1,6 @@
 use crate::note::{Note, NoteType, Music, MusicToWavFile};
 use crate::wave::WavFile;
+use crate::tests::utils::to_hex;
 
 
 #[test]
@@ -12,6 +13,7 @@ fn test_get_note() {
     assert!(res[1] == 'I');
     assert!(res[2] == 'F');
     assert!(res[3] == 'F');
+    println!("{:}", to_hex(@res));
 }
 
 #[test]
@@ -38,4 +40,6 @@ fn test_get_melody() {
     assert!(res[1] == 'I');
     assert!(res[2] == 'F');
     assert!(res[3] == 'F');
+
+    println!("{:}", to_hex(@res));
 }

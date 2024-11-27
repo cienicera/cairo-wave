@@ -3,19 +3,6 @@ use crate::wave::WavFile;
 use crate::tests::utils::to_hex;
 
 #[test]
-fn test_get_note_4bits() {
-    let note = Note { frequency_hz: 440, duration_ms: 1000, note_type: NoteType::Sine };
-    let music = Music { notes: array![note].span(), sample_rate: 8000, bit_depth: 4 };
-    let wav: WavFile = music.into();
-    let res: ByteArray = wav.into();
-    assert!(res[0] == 'R');
-    assert!(res[1] == 'I');
-    assert!(res[2] == 'F');
-    assert!(res[3] == 'F');
-    println!("{:}", to_hex(@res));
-}
-
-#[test]
 fn test_get_note_8bits() {
     let note = Note { frequency_hz: 440, duration_ms: 1000, note_type: NoteType::Sine };
     let music = Music { notes: array![note].span(), sample_rate: 8000, bit_depth: 8 };

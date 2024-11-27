@@ -21,8 +21,11 @@ impl WavToBytes of Into<WavFile, ByteArray> {
         let mut bytes: ByteArray = "";
         // TODO: Assert correct data size?
 
+        let subchunk2_size = self.data.len() * (self.bits_per_sample.into() / 8_u32);
+        let chunk_size = 36 + subchunk2_size;
+
         bytes.append_word(CHUNK_ID, 4);
-        bytes.append_word_rev(self.chunk_size.into(), 4);
+        bytes.append_word_rev(chunk_size.into(), 4);
         bytes.append_word(WAVE_ID, 4);
         bytes.append_word(FMT_ID, 4);
         bytes.append_word_rev(PCM_SUBCHUNK1_SIZE.into(), 4);
@@ -38,14 +41,14 @@ impl WavToBytes of Into<WavFile, ByteArray> {
         bytes.append_word_rev(block_align.into(), 2);
         bytes.append_word_rev(self.bits_per_sample.into(), 2);
         bytes.append_word(DATA_ID, 4);
-        bytes.append_word_rev(self.subchunk2_size.into(), 4);
+        bytes.append_word_rev(subchunk2_size.into(), 4);
 
         // Append data
         let mut count = 0;
         if self.bits_per_sample == 4_u16 {
             while self.data.len() - count > 1 {
                 let byte: u32 = *self.data[count] * 0x10 + *self.data[count + 1];
-                bytes.append_byte((byte).try_into().unwrap());
+                bytes.append_byte(byte.try_into().expect('byte overflow'));
                 count += 2;
             };
         } else {
