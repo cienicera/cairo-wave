@@ -6,20 +6,11 @@ on:
   push:
     branches:
       - main
-
 jobs:
-  check:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Scarb
-        uses: software-mansion/setup-scarb@v1
-
-      - name: Setup snfoundry
-        uses: foundry-rs/setup-snfoundry@v3
-
-      - name: Run Cairo tests
-        run: scarb test
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+      - uses: foundry-rs/setup-snfoundry@v3
+      - run: scarb test
