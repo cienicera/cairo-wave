@@ -12,7 +12,7 @@ def main():
     test_filter = sys.argv[1]
 
     try:
-        output = subprocess.check_output(f"scarb test -q -f {test_filter}", shell=True)
+        output = subprocess.check_output(f"scarb test -q {test_filter}", shell=True)
     except subprocess.CalledProcessError as e:
         print("scarb test failed")
         exit(1)
