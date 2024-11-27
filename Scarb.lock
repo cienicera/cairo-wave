@@ -6,6 +6,7 @@ name = "cairo_wave"
 version = "0.1.0"
 dependencies = [
  "cubit",
+ "snforge_std",
 ]
 
 [[package]]
@@ -13,3 +14,16 @@ name = "cubit"
 version = "1.3.1"
 source = "registry+https://scarbs.xyz/"
 checksum = "sha256:e73248c77009b6d6bc62f8e9388e0135d3e2d80f73bf80956b52d998eb51bc62"
+
+[[package]]
+name = "snforge_scarb_plugin"
+version = "0.33.0"
+source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.33.0#221b1dbff42d650e9855afd4283508da8f8cacba"
+
+[[package]]
+name = "snforge_std"
+version = "0.33.0"
+source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.33.0#221b1dbff42d650e9855afd4283508da8f8cacba"
+dependencies = [
+ "snforge_scarb_plugin",
+]
