@@ -14,10 +14,7 @@ fn test_get_piano_melody() {
     let empty: PianoNote = PianoNote { frequency_hz: 16000, duration_ms: 10 };
 
     let music = PianoMusic {
-        notes: array![sol, la, si, sol, la2]
-            .span(),
-        sample_rate: 8000,
-        bit_depth: 8,
+        notes: array![sol, la, si, sol, la2].span(), sample_rate: 8000, bit_depth: 8,
     };
     let wav: WavFile = music.into();
     let res: ByteArray = wav.into();
