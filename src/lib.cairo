@@ -16,4 +16,5 @@ mod tests {
     mod test_notes;
     mod test_drum_kit;
     mod test_bit_depth;
+    mod test_piano;
 }
