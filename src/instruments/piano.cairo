@@ -69,12 +69,11 @@ fn generate(
                     + h2 * tmp_exp / 2_u32.into()
                     + h3 * tmp_exp / 4_u32.into()
                     + h4 * tmp_exp / 8_u32.into()
-                     + h5 * tmp_exp / 16_u32.into()
-                     + h6 * tmp_exp / 32_u32.into();
+                    + h5 * tmp_exp / 16_u32.into()
+                    + h6 * tmp_exp / 32_u32.into();
 
                 y = y / 3_u32.into();
-                y = y*y*y;
-
+                y = y * y * y;
 
                 if bit_depth == 8_u16 {
                     y = y + 1_u32.into();
@@ -86,7 +85,7 @@ fn generate(
 
                 y = y * (max_value / 2 + 1).into();
                 let sample_value: u64 = y.floor().try_into().expect('sin wave overflow');
-                let clamp : u32 = core::cmp::min(sample_value, max_value.into()).try_into().unwrap();
+                let clamp: u32 = core::cmp::min(sample_value, max_value.into()).try_into().unwrap();
 
                 samples.append(clamp);
             };
